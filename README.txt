@@ -1,0 +1,1 @@
+Set Quicklisp to HTTPS
