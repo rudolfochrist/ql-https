@@ -3,9 +3,12 @@
 (defpackage #:ql-https
   (:use :cl)
   (:export
-   #:fetcher))
+   #:fetcher
+   #:*quietly-use-https*))
 
 (in-package #:ql-https)
+
+(defvar *quietly-use-https* nil)
 
 
 (defun fetcher (url file &rest args)
@@ -14,7 +17,12 @@
       (uiop:run-program (format nil "curl -fsSL ~A -o ~A" url file)
                         :output '(:string :stripped t)
                         :error-output :output)
-      (restart-case (error "We don't use HTTP here!")
+      (restart-case
+          (handler-bind ((error (lambda (c)
+                                  (declare (ignore c))
+                                  (when *quietly-use-https*
+                                    (invoke-restart 'use-http)))))
+            (error "We don't use HTTP here!"))
         (use-http ()
           :report "Retry with HTTPS."
           (apply #'fetcher
