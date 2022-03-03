@@ -1,0 +1,49 @@
+#+STARTUP: showall
+#+EXPORT_FILE_NAME: ../README.txt
+#+OPTIONS: toc:nil author:nil
+# This is just the template README. Export to txt to get the real README.
+* NAME
+
+ql-https --- HTTPS support for Quicklisp via curl
+
+* VERSION
+
+#+BEGIN_SRC shell :exports results
+cat ../version
+#+END_SRC
+
+* SYNOPSIS
+
+#+begin_src lisp
+(asdf:load-system "ql-https")
+#+end_src
+
+* DESCRIPTION
+
+** PREREQUISITES
+
+- [[https://www.quicklisp.org/beta/][Quicklisp]]
+- curl (refer to your system package manager)
+  
+** INSTALLATION
+
+Clone the repository somewhere ASDF finds it, like =~/common-lisp= and add following lines to your lisp
+init/startup file (e.g. =~/.sbclrc=)
+
+#+begin_src lisp
+(require 'asdf)
+#+quicklisp (asdf:load-system "ql-https")
+#+ql-https (setf ql-https:*quietly-use-https* t)  ;; optional
+#+end_src
+
+* AUTHOR
+
+Sebastian Christ ([[mailto:rudolfo.christ@pm.me]])
+
+* COPYRIGHT
+
+Copyright (c) 2022 Sebastian Christ (rudolfo.christ@pm.me)
+
+* LICENSE
+
+Released under the MIT license.

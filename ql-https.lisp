@@ -8,9 +8,11 @@
 
 (in-package #:ql-https)
 
-(defvar *quietly-use-https* nil)
+(defvar *quietly-use-https* nil
+  "If non-nil quietly use HTTPS.")
 
 (defun fetcher (url file &rest args)
+  "Fetch URL and safe it to FILE."
   (declare (ignorable args))
   (if (uiop:string-prefix-p "https://" url)
       (uiop:run-program (format nil "curl -fsSL ~A -o ~A" url file)
@@ -33,7 +35,7 @@
           (setf *quietly-use-https* t)
           (apply #'fetcher url file args)))))
 
-
+;;; register QL
 (setf ql-http:*fetch-scheme-functions*
       (list (cons "http" 'fetcher)
             (cons "https" 'fetcher)))
