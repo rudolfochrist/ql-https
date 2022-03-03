@@ -10,7 +10,6 @@
 
 (defvar *quietly-use-https* nil)
 
-
 (defun fetcher (url file &rest args)
   (declare (ignorable args))
   (if (uiop:string-prefix-p "https://" url)
@@ -21,14 +20,19 @@
           (handler-bind ((error (lambda (c)
                                   (declare (ignore c))
                                   (when *quietly-use-https*
-                                    (invoke-restart 'use-http)))))
+                                    (invoke-restart 'use-https)))))
             (error "We don't use HTTP here!"))
-        (use-http ()
-          :report "Retry with HTTPS."
+        (use-https ()
+          :report "Retry with HTTP."
           (apply #'fetcher
                  (format nil "https~A" (subseq url 4))
                  file
-                 args)))))
+                 args))
+        (use-https-session ()
+          :report "Retry with HTTPS and save decision for this session."
+          (setf *quietly-use-https* t)
+          (fetcher url file args)))))
+
 
 (setf ql-http:*fetch-scheme-functions*
       (list (cons "http" 'fetcher)

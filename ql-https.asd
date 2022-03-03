@@ -11,4 +11,6 @@
   :description "Enable HTTPS in Quicklisp"
   :long-description
   #.(uiop:read-file-string
-     (uiop:subpathname *load-pathname* "README.txt")))
+     (uiop:subpathname *load-pathname* "README.txt"))
+  :perform (load-op :after (o c)
+                    (pushnew :ql-https *features*)))
