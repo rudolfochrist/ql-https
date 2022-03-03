@@ -31,7 +31,7 @@
         (use-https-session ()
           :report "Retry with HTTPS and save decision for this session."
           (setf *quietly-use-https* t)
-          (fetcher url file args)))))
+          (apply #'fetcher url file args)))))
 
 
 (setf ql-http:*fetch-scheme-functions*
