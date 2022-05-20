@@ -23,7 +23,7 @@
                                   (declare (ignore c))
                                   (when *quietly-use-https*
                                     (invoke-restart 'use-https)))))
-            (error "We don't use HTTP here!"))
+            (error "We don't use HTTP here!~&URL: ~A" url))
         (use-https ()
           :report "Retry with HTTP."
           (apply #'fetcher
