@@ -16,6 +16,7 @@
   #.(uiop:read-file-string
      (uiop:subpathname *load-pathname* "README.txt"))
   :perform (load-op :after (o c)
+                    (uiop:symbol-call :ql-https :register-fetch-scheme-functions)
                     (pushnew :ql-https *features*)))
 
 

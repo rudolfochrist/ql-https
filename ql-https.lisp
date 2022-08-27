@@ -4,7 +4,8 @@
   (:use :cl)
   (:export
    #:fetcher
-   #:*quietly-use-https*))
+   #:*quietly-use-https*
+   #:register-fetch-scheme-functions))
 
 (in-package #:ql-https)
 
@@ -35,7 +36,8 @@
           (setf *quietly-use-https* t)
           (apply #'fetcher url file args)))))
 
-;;; register QL
-(setf ql-http:*fetch-scheme-functions*
-      (list (cons "http" 'fetcher)
-            (cons "https" 'fetcher)))
+
+(defun register-fetch-scheme-functions ()
+  (setf ql-http:*fetch-scheme-functions*
+        (list (cons "http" 'fetcher)
+              (cons "https" 'fetcher))))

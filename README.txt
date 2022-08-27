@@ -7,6 +7,10 @@
 2 VERSION
 =========
 
+  ,----
+  | 0.4.0
+  `----
+
 
 3 SYNOPSIS
 ==========
@@ -32,13 +36,44 @@
 4.2 INSTALLATION
 ~~~~~~~~~~~~~~~~
 
-  Clone the repository somewhere ASDF finds it, like `~/common-lisp' and
-  add following lines to your lisp init/startup file (e.g. `~/.sbclrc')
+  1. Clone quicklisp-client from
+     <https://github.com/quicklisp/quicklisp-client.git> to ~/quicklisp
+  2. Clone ql-https from
+     <https://github.com/rudolfochrist/ql-https.git> to to
+     ~/common-lisp/ql-https
+  3. Disconnect internet.
+  4. Start a fresh REPL and (require 'asdf)
+  5. Load ~/common-lisp/ql-https/ql-setup.lisp
+  6. Eval (asdf:load-system "ql-https")
+  7. Inspect ql-<http:*fetch-scheme-functions>* and verify everything
+     was registered properly.
+  8. Connect internet.
+  9. Eval (quicklisp:setup) - use the USE-HTTPS restart if you hit the
+     network.
+  10. DONE
+
+  If you're bothered that (ql:update-client) warns about a missing
+  client-info.sexp then do:
+
+  1. Set ql-<info:*version>* to a year before (or any other year)
+     e.g. from 2021-02-13 to 2020-02-13
+  2. Run (ql:update-client) This "installs" the latest client and write
+     the client-info.sexp
+
+
+4.3 STARTUP
+~~~~~~~~~~~
 
   ,----
-  | (require 'asdf)
-  | #+quicklisp (asdf:load-system "ql-https")
-  | #+ql-https (setf ql-https:*quietly-use-https* t)  ;; optional
+  | (let ((quicklisp-init #p"~/common-lisp/ql-https/ql-setup.lisp"))
+  |   (when (probe-file quicklisp-init)
+  |     (load quicklisp-init)
+  |     (asdf:load-system "ql-https")
+  |     (uiop:symbol-call :quicklisp :setup)))
+  | 
+  | ;; optional
+  | #+ql-https
+  | (setf ql-https:*quietly-use-https* t)
   `----
 
 
