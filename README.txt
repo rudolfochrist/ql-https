@@ -8,7 +8,7 @@
 =========
 
   ,----
-  | 0.4
+  | 0.5.0
   `----
 
 
@@ -36,29 +36,26 @@
 4.2 INSTALLATION
 ~~~~~~~~~~~~~~~~
 
-  1. Clone quicklisp-client from
-     <https://github.com/quicklisp/quicklisp-client.git> to ~/quicklisp
-  2. Clone ql-https from
-     <https://github.com/rudolfochrist/ql-https.git> to to
-     ~/common-lisp/ql-https
-  3. Disconnect internet.
-  4. Start a fresh REPL and (require 'asdf)
-  5. Load ~/common-lisp/ql-https/ql-setup.lisp
-  6. Eval (asdf:load-system "ql-https")
-  7. Inspect ql-<http:*fetch-scheme-functions>* and verify everything
-     was registered properly.
-  8. Connect internet.
-  9. Eval (quicklisp:setup) - use the USE-HTTPS restart if you hit the
-     network.
-  10. DONE
+  1. `mkdir ~/quicklis' and `cd ~/quicklisp'
+  2. Go to <https://beta.quicklisp.org/client/quicklisp.sexp> and lookup
+     `:client-tar' URL, download it, verify hash and untar.
+  3. Clone ql-https from <https://github.com/rudolfochrist/ql-https.git>
+     to to `~/common-lisp/ql-https'
+  4. Disconnect internet. (Prevent that anything leaks over HTTP during
+     the installation)
+  5. Start a fresh REPL and (require 'asdf)
+  6. Load `~/common-lisp/ql-https/ql-setup.lisp'
+  7. Eval `(asdf:load-system "ql-https")'
+  8. Inspect `ql-http:*scheme-functions*' and verify everything was
+     registered properly.
+  9. Connect internet.
+  10. Eval `(quicklisp:setup)' - use the USE-HTTPS restart if you hit
+      the network.
 
-  If you're bothered that (ql:update-client) warns about a missing
-  client-info.sexp then do:
+  Removing the /Missing client-info.sexp, using mock info/ warning.
 
-  1. Set ql-<info:*version>* to a year before (or any other year)
-     e.g. from 2021-02-13 to 2020-02-13
-  2. Run (ql:update-client) This "installs" the latest client and write
-     the client-info.sexp
+  1. Eval `(ql:update-client)'
+  2. move `~/quicklisp/tmp/client-info.sexp' to `~/quicklisp'
 
 
 4.3 STARTUP
