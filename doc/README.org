@@ -1,5 +1,5 @@
 #+STARTUP: showall
-#+EXPORT_FILE_NAME: ../README.txt
+#+EXPORT_FILE_NAME: ../README.md
 #+OPTIONS: toc:nil author:nil
 # This is just the template README. Export to txt to get the real README.
 * NAME
@@ -27,7 +27,7 @@ cat ../version
   
 ** INSTALLATION
 
-1. =mkdir ~/quicklis= and =cd ~/quicklisp=
+1. =mkdir ~/quicklisp= and =cd ~/quicklisp=
 2. Go to [[https://beta.quicklisp.org/client/quicklisp.sexp]] and lookup =:client-tar= URL, download it, verify
    hash and untar.
 3. Clone ql-https from https://github.com/rudolfochrist/ql-https.git to
@@ -36,7 +36,8 @@ cat ../version
 5. Start a fresh REPL and (require 'asdf)
 6. Load =~/common-lisp/ql-https/ql-setup.lisp=
 7. Eval ~(asdf:load-system "ql-https")~
-8. Inspect ~ql-http:*scheme-functions*~ and verify everything was registered properly.
+8. Inspect ~ql-http:*fetch-scheme-functions*~ and verify everything was registered properly. Both =http= and
+   =https= have =ql-https:fetcher= registered.
 9. Connect internet.
 10. Eval ~(quicklisp:setup)~ - use the USE-HTTPS restart if you hit the network.
 
