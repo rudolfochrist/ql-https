@@ -26,7 +26,7 @@
                                     (invoke-restart 'use-https)))))
             (error "We don't use HTTP here!~&URL: ~A" url))
         (use-https ()
-          :report "Retry with HTTP."
+          :report "Retry with HTTPS."
           (apply #'fetcher
                  (format nil "https~A" (subseq url 4))
                  file
