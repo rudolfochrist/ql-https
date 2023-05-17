@@ -45,6 +45,10 @@ Removing the *Missing client-info.sexp, using mock info* warning.
 1.  Eval `(ql:update-client)`
 2.  move `~/quicklisp/tmp/client-info.sexp` to `~/quicklisp`
 
+Watch ASCIInema:
+
+[![asciicast](https://asciinema.org/a/585361.svg)](https://asciinema.org/a/585361)
+
 
 ## STARTUP
 
