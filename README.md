@@ -62,6 +62,7 @@ Watch ASCIInema:
     #+ql-https
     (setf ql-https:*quietly-use-https* t)
 
+To load Quicklisp and ql-https every time you start lisp, for sbcl add this to ~/.sbclrc
 
 # AUTHOR
 
