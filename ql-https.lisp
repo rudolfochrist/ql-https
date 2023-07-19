@@ -16,9 +16,10 @@
   "Fetch URL and safe it to FILE."
   (declare (ignorable args))
   (if (uiop:string-prefix-p "https://" url)
-      (uiop:run-program (format nil "curl -fsSL ~A -o ~A" url file)
-                        :output '(:string :stripped t)
-                        :error-output :output)
+      (values (uiop:run-program (format nil "curl -fsSL ~A -o ~A" url file)
+                                :output '(:string :stripped t)
+                                :error-output :output)
+              (and file (probe-file file)))
       (restart-case
           (handler-bind ((error (lambda (c)
                                   (declare (ignore c))
