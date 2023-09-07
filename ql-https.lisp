@@ -19,8 +19,10 @@
       (let ((output (uiop:run-program (format nil "curl -fsSL ~A -o ~A" url file)
                                       :output '(:string :stripped t)
                                       :error-output :output))
-            (file (and file (probe-file file))))
-        (verify-download file (url-to-release url))
+            (file (and file (probe-file file)))
+            (release (url-to-release url)))
+        (when release
+          (verify-download file release))
         (values output file))
       (restart-case
           (handler-bind ((error (lambda (c)
@@ -41,9 +43,10 @@
 
 (defun url-to-release (url)
   "extracts name of release from URL"
-  (let* ((start (+ (search "/archive/" url) (length "/archive/")))
-         (end (position #\/ url :start start)))
-    (subseq url start end)))
+  (when (search "/archive/" url)
+    (let* ((start (+ (search "/archive/" url) (length "/archive/")))
+           (end (position #\/ url :start start)))
+      (subseq url start end))))
 
 (defun md5 (file)
   "Returns md5sum of FILE"
