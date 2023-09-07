@@ -33,7 +33,7 @@ environment variable, for example to use Clozure common lisp:
 
 now run the installer script:
 
-    curl https://raw.githubusercontent.com/rudolfochrist/ql-https/install-script/install.sh | bash
+    curl https://raw.githubusercontent.com/rudolfochrist/ql-https/master/install.sh | bash
 
 
 ## MANUAL INSTALLATION

@@ -33,7 +33,7 @@ export LANG=ccl
 #+end_src
 now run the installer script:
 #+begin_src sh
-curl https://raw.githubusercontent.com/rudolfochrist/ql-https/install-script/install.sh | bash
+curl https://raw.githubusercontent.com/rudolfochrist/ql-https/master/install.sh | bash
 #+end_src
 
 ** MANUAL INSTALLATION
