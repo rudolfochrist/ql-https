@@ -24,7 +24,19 @@ ql-https &#x2014; HTTPS support for Quicklisp via curl
 -   curl (refer to your system package manager)
 
 
-## INSTALLATION
+## AUTOMATIC INSTALLATION
+
+The default implementation is sbcl, if you are using another then set the `LANG`
+environment variable, for example to use Clozure common lisp:
+
+    export LANG=ccl
+
+now run the installer script:
+
+    curl https://raw.githubusercontent.com/rudolfochrist/ql-https/install-script/install.sh | bash
+
+
+## MANUAL INSTALLATION
 
 1.  `mkdir ~/quicklisp` and `cd ~/quicklisp`
 2.  Go to <https://beta.quicklisp.org/client/quicklisp.sexp> and lookup `:client-tar` URL, download it, verify
