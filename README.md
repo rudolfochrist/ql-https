@@ -26,10 +26,10 @@ ql-https &#x2014; HTTPS support for Quicklisp via curl
 
 ## AUTOMATIC INSTALLATION
 
-The default implementation is sbcl, if you are using another then set the `LANG`
+The default implementation is sbcl, if you are using another then set the `LISP`
 environment variable, for example to use Clozure common lisp:
 
-    export LANG=ccl
+    export LISP=ccl
 
 now run the installer script:
 

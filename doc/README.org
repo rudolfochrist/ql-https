@@ -26,10 +26,10 @@ cat ../version
 - curl (refer to your system package manager)
   
 ** AUTOMATIC INSTALLATION
-The default implementation is sbcl, if you are using another then set the ~LANG~
+The default implementation is sbcl, if you are using another then set the ~LISP~
 environment variable, for example to use Clozure common lisp:
-#+begin_src lisp
-export LANG=ccl
+#+begin_src sh
+export LISP=ccl
 #+end_src
 now run the installer script:
 #+begin_src sh
