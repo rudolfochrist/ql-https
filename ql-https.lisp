@@ -57,7 +57,7 @@
 #-sbcl
 (defun md5 (file)
   "Returns md5sum of FILE"
-  (let* ((output (uiop:run-program (list "md5sum" file) :output :string))
+  (let* ((output (uiop:run-program (list "md5sum" (namestring file)) :output :string))
          (space-pos (position #\Space output)))
     (subseq output 0 space-pos)))
 
