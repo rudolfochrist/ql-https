@@ -51,7 +51,6 @@
 #+sbcl
 (defun md5 (file)
   "Returns md5sum of FILE"
-  (require 'sb-md5)
   (format nil "~{~2,'0x~}" (coerce (sb-md5:md5sum-file file) 'list)))
 
 #-sbcl
