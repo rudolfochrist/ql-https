@@ -1,13 +1,7 @@
-
-
 # NAME
 
+
 ql-https &#x2014; HTTPS support for Quicklisp via curl
-
-
-# VERSION
-
-    0.5.0
 
 
 # SYNOPSIS
@@ -21,7 +15,8 @@ ql-https &#x2014; HTTPS support for Quicklisp via curl
 ## PREREQUISITES
 
 -   [Quicklisp](https://www.quicklisp.org/beta/)
--   curl (refer to your system package manager)
+-   curl
+-   md5sum (unless you're using SBCL)
 
 
 ## AUTOMATIC INSTALLATION
@@ -64,16 +59,17 @@ Watch ASCIInema:
 
 ## STARTUP
 
-    (let ((quicklisp-init #p"~/common-lisp/ql-https/ql-setup.lisp"))
-      (when (probe-file quicklisp-init)
-        (load quicklisp-init)
-        (asdf:load-system "ql-https")
-        (uiop:symbol-call :quicklisp :setup)))
-    
-    ;; optional
-    #+ql-https
-    (setf ql-https:*quietly-use-https* t)
+```lisp
+(let ((quicklisp-init #p"~/common-lisp/ql-https/ql-setup.lisp"))
+  (when (probe-file quicklisp-init)
+    (load quicklisp-init)
+    (asdf:load-system "ql-https")
+    (uiop:symbol-call :quicklisp :setup)))
 
+;; optional
+#+ql-https
+(setf ql-https:*quietly-use-https* t)
+```
 
 # AUTHOR
 
