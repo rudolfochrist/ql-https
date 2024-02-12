@@ -48,10 +48,17 @@
            (end (position #\/ url :start start)))
       (subseq url start end))))
 
+#+sbcl
 (defun md5 (file)
   "Returns md5sum of FILE"
-  (uiop:run-program (format nil "md5sum \"~A\" | cut -d' ' -f 1" file)
-                    :output '(:string :stripped t)))
+  (format nil "~{~2,'0x~}" (coerce (sb-md5:md5sum-file file) 'list)))
+
+#-sbcl
+(defun md5 (file)
+  "Returns md5sum of FILE"
+  (let* ((output (uiop:run-program (list "md5sum" (namestring file)) :output :string))
+         (space-pos (position #\Space output)))
+    (subseq output 0 space-pos)))
 
 (defun file-size (file)
   "Returns the size of FILE in bytes"
@@ -62,7 +69,7 @@
   "Checks that the md5 and size of FILE are as expected from the quicklisp
 dist."
   (let ((release (ql-dist:find-release name)))
-    (unless (string= (ql-dist:archive-md5 release) (md5 file))
+    (unless (string-equal (ql-dist:archive-md5 release) (md5 file))
       (error "md5 mismatch for ~A" name))
     (unless (= (ql-dist:archive-size release) (file-size file))
       (error "file size mismatch for ~A" name))))

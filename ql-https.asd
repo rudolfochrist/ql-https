@@ -9,7 +9,7 @@
   :bug-tracker "https://github.com/rudolfochrist/ql-https/issues"
   :source-control (:git "https://github.com/rudolfochrist/ql-https.git")
   :version (:read-file-line "version")
-  :depends-on ((:require "uiop"))
+  :depends-on ((:require "uiop") (:feature :sbcl :sb-md5))
   :components ((:file "ql-https"))
   :description "Enable HTTPS in Quicklisp"
   :long-description
