@@ -16,7 +16,6 @@ ql-https &#x2014; HTTPS support for Quicklisp via curl
 
 -   [Quicklisp](https://www.quicklisp.org/beta/)
 -   curl
--   md5sum (unless you're using SBCL)
 
 
 ## AUTOMATIC INSTALLATION

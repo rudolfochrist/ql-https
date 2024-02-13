@@ -4,31 +4,43 @@ set -euo pipefail
 
 LISP=${LISP=sbcl}
 
-echo "Downloading quicklisp metadata..."
-mkdir -p ~/quicklisp
-meta=$( curl -s https://beta.quicklisp.org/client/quicklisp.sexp | \
-        awk '/:client-tar/,/)/' | tr '\n' ' ' | sed -e's/\s\+/ /g' )
+# For testers
+QL_TOPDIR="${QL_TOPDIR-$HOME/quicklisp}"
+CLDIR="${CLDIR-$HOME/common-lisp}"
+SKIP_USERINIT="${SKIP_USERINIT-no}"
 
-url=$( grep -oP '(?<=:url ")[^"]*' <<< "$meta" )
-sha256=$( grep -oP '(?<=:sha256 ")[^"]*' <<< "$meta" )
-
-echo "Downloading quicklisp client..."
-curl -s "$url" -o ~/quicklisp/quicklisp.tar
-
-if [ "$sha256" != "$(sha256sum ~/quicklisp/quicklisp.tar  | cut -d' ' -f 1)" ]
-then
-   echo "sha mismatch" >&2
-   exit 1
+if test -d "$QL_TOPDIR"; then
+    echo "Cannot install Quicklisp because it seems it is already installed!"
+    echo "Please check $QL_TOPDIR"
+    exit 1
 fi
 
-tar xf ~/quicklisp/quicklisp.tar -C ~/quicklisp
-rm ~/quicklisp/quicklisp.tar
+echo "Downloading quicklisp metadata..."
+mkdir -p "$QL_TOPDIR"
+meta=$( curl -s https://beta.quicklisp.org/client/quicklisp.sexp | \
+            awk '/:client-tar/,/)/' | tr '\n' ' ' | tr -s ' ' )
+
+url=$( perl -nle 'print $& if m{(?<=:url ")[^"]*}g' <<< "$meta" )
+sha256=$( perl -nle 'print $& if m{(?<=:sha256 ")[^"]*}g' <<< "$meta" )
+
+echo "Downloading quicklisp client..."
+curl -s "$url" -o "$QL_TOPDIR"/quicklisp.tar
+
+if [ "$sha256" != "$(openssl dgst -sha256 "$QL_TOPDIR"/quicklisp.tar  | cut -d' ' -f 2)" ]
+then
+    echo "sha mismatch" >&2
+    exit 1
+fi
+
+tar xf "$QL_TOPDIR"/quicklisp.tar -C "$QL_TOPDIR"
+rm "$QL_TOPDIR"/quicklisp.tar
 
 echo "Cloning ql-https..."
-git clone https://github.com/rudolfochrist/ql-https ~/common-lisp/ql-https
+git clone https://github.com/rudolfochrist/ql-https "$CLDIR"/ql-https
 
-echo "Running setup code..."
-$LISP <<EOF
+if test "$SKIP_USERINIT" = no; then
+    echo "Running setup code..."
+    $LISP <<EOF
 (require 'asdf)
 (load "~/common-lisp/ql-https/ql-setup.lisp")
 (asdf:load-system "ql-https")
@@ -39,7 +51,7 @@ $LISP <<EOF
   (ql:add-to-init-file))
 EOF
 
-cat > ~/quicklisp/setup.lisp <<EOF
+    cat > "$QL_TOPDIR"/setup.lisp <<EOF
 (require 'asdf)
 (let ((quicklisp-init #p"~/common-lisp/ql-https/ql-setup.lisp"))
   (when (probe-file quicklisp-init)
@@ -51,5 +63,6 @@ cat > ~/quicklisp/setup.lisp <<EOF
 #+ql-https
 (setf ql-https:*quietly-use-https* t)
 EOF
+fi
 
 echo "All done!"
