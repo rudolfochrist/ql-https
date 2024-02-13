@@ -7,6 +7,7 @@ LISP=${LISP=sbcl}
 # For testers
 QL_TOPDIR="${QL_TOPDIR-$HOME/quicklisp}"
 CLDIR="${CLDIR-$HOME/common-lisp}"
+SKIP_USERINIT="${SKIP_USERINIT-no}"
 
 if test -d "$QL_TOPDIR"; then
     echo "Cannot install Quicklisp because it seems it is already installed!"
@@ -37,8 +38,9 @@ rm "$QL_TOPDIR"/quicklisp.tar
 echo "Cloning ql-https..."
 git clone https://github.com/rudolfochrist/ql-https "$CLDIR"/ql-https
 
-echo "Running setup code..."
-$LISP <<EOF
+if test "$SKIP_USERINIT" = no; then
+    echo "Running setup code..."
+    $LISP <<EOF
 (require 'asdf)
 (load "~/common-lisp/ql-https/ql-setup.lisp")
 (asdf:load-system "ql-https")
@@ -49,7 +51,7 @@ $LISP <<EOF
   (ql:add-to-init-file))
 EOF
 
-cat > "$QL_TOPDIR"/setup.lisp <<EOF
+    cat > "$QL_TOPDIR"/setup.lisp <<EOF
 (require 'asdf)
 (let ((quicklisp-init #p"~/common-lisp/ql-https/ql-setup.lisp"))
   (when (probe-file quicklisp-init)
@@ -61,5 +63,6 @@ cat > "$QL_TOPDIR"/setup.lisp <<EOF
 #+ql-https
 (setf ql-https:*quietly-use-https* t)
 EOF
+fi
 
 echo "All done!"
