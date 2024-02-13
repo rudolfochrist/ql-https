@@ -3,7 +3,10 @@
 set -euo pipefail
 
 LISP=${LISP=sbcl}
+
+# For testers
 QL_TOPDIR="${QL_TOPDIR-$HOME/quicklisp}"
+CLDIR="${CLDIR-$HOME/common-lisp}"
 
 if test -d "$QL_TOPDIR"; then
     echo "Cannot install Quicklisp because it seems it is already installed!"
@@ -32,7 +35,7 @@ tar xf "$QL_TOPDIR"/quicklisp.tar -C "$QL_TOPDIR"
 rm "$QL_TOPDIR"/quicklisp.tar
 
 echo "Cloning ql-https..."
-git clone https://github.com/rudolfochrist/ql-https ~/common-lisp/ql-https
+git clone https://github.com/rudolfochrist/ql-https "$CLDIR"/ql-https
 
 echo "Running setup code..."
 $LISP <<EOF
