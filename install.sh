@@ -16,8 +16,8 @@ mkdir -p "$QL_TOPDIR"
 meta=$( curl -s https://beta.quicklisp.org/client/quicklisp.sexp | \
             awk '/:client-tar/,/)/' | tr '\n' ' ' | tr -s ' ' )
 
-url=$( grep -oP '(?<=:url ")[^"]*' <<< "$meta" )
-sha256=$( grep -oP '(?<=:sha256 ")[^"]*' <<< "$meta" )
+url=$( perl -nle 'print $& if m{(?<=:url ")[^"]*}g' <<< "$meta" )
+sha256=$( perl -nle 'print $& if m{(?<=:sha256 ")[^"]*}g' <<< "$meta" )
 
 echo "Downloading quicklisp client..."
 curl -s "$url" -o "$QL_TOPDIR"/quicklisp.tar
