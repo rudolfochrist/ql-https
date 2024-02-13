@@ -56,9 +56,10 @@
 #-sbcl
 (defun md5 (file)
   "Returns md5sum of FILE"
-  (let* ((output (uiop:run-program (list "md5sum" (namestring file)) :output :string))
+  (let* ((output (uiop:run-program (list "openssl" "dgst" "-md5" (namestring file))
+                                   :output '(:string :stripped t)))
          (space-pos (position #\Space output)))
-    (subseq output 0 space-pos)))
+    (subseq output (1+ space-pos))))    ; exclude space itself
 
 (defun file-size (file)
   "Returns the size of FILE in bytes"
