@@ -2,6 +2,7 @@
 
 (defpackage #:ql-https
   (:use :cl)
+  (:import-from #:ql-gunzipper #:gunzip)
   (:export
    #:fetcher
    #:*quietly-use-https*
@@ -53,13 +54,17 @@
   "Returns md5sum of FILE"
   (format nil "~{~2,'0x~}" (coerce (sb-md5:md5sum-file file) 'list)))
 
+(defun extract-openssl-digest (output)
+  "Extracts digest from output of `openssl dgst'"
+  (let ((space-pos (position #\Space output)))
+    (subseq output (1+ space-pos))))    ; exclude space itself
+
 #-sbcl
 (defun md5 (file)
   "Returns md5sum of FILE"
-  (let* ((output (uiop:run-program (list "openssl" "dgst" "-md5" (namestring file))
-                                   :output '(:string :stripped t)))
-         (space-pos (position #\Space output)))
-    (subseq output (1+ space-pos))))    ; exclude space itself
+  (extract-openssl-digest
+   (uiop:run-program (list "openssl" "dgst" "-md5" (namestring file))
+                     :output '(:string :stripped t))))
 
 (defun file-size (file)
   "Returns the size of FILE in bytes"
@@ -72,6 +77,8 @@ dist."
   (let ((release (ql-dist:find-release name)))
     (unless (string-equal (ql-dist:archive-md5 release) (md5 file))
       (error "md5 mismatch for ~A" name))
+    (unless (string-equal (ql-dist:archive-content-sha1 release) (content-hash file))
+      (error "sha1 mismatch for ~A" name))
     (unless (= (ql-dist:archive-size release) (file-size file))
       (error "file size mismatch for ~A" name))))
 
