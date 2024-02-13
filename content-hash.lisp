@@ -92,6 +92,13 @@ starting storage block in STREAM, and the total file size."
                       result))))
           (skip-n-octets-blocks size stream))))))
 
+(defun read-binary-line (stream)
+  "Read a line from a binary stream and return it as an ascii string."
+  (with-output-to-string (string)
+    (loop for byte = (read-byte stream)
+          until (= byte (char-code #\Newline))
+          do (write-char (code-char byte) string))))
+
 (defun content-hash (tarfile)
   "Return a hash string of TARFILE. The hash is computed by creating
 the digest of the files in TARFILE in order of their name."
@@ -101,6 +108,7 @@ the digest of the files in TARFILE in order of their name."
          (with-open-file (stream tarfile :element-type '(unsigned-byte 8))
            (let* ((openssl (uiop:launch-program "openssl dgst -sha1"
                                                 :input :stream
+                                                :element-type '(unsigned-byte 8)
                                                 :output :stream))
                   (digest-stream (uiop:process-info-input openssl))
                   (buffer (make-block-buffer)))
@@ -122,6 +130,6 @@ the digest of the files in TARFILE in order of their name."
                (close (uiop:process-info-input openssl))
                (unless (zerop (uiop:wait-process openssl))
                  (error "openssl failed to calculate sha1"))
-               (extract-openssl-digest (read-line (uiop:process-info-output openssl))))))
+               (extract-openssl-digest (read-binary-line (uiop:process-info-output openssl))))))
       (when (probe-file temp)
         (ignore-errors (delete-file temp))))))
