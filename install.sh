@@ -14,7 +14,7 @@ fi
 echo "Downloading quicklisp metadata..."
 mkdir -p "$QL_TOPDIR"
 meta=$( curl -s https://beta.quicklisp.org/client/quicklisp.sexp | \
-            awk '/:client-tar/,/)/' | tr '\n' ' ' | sed -e's/\s\+/ /g' )
+            awk '/:client-tar/,/)/' | tr '\n' ' ' | tr -s ' ' )
 
 url=$( grep -oP '(?<=:url ")[^"]*' <<< "$meta" )
 sha256=$( grep -oP '(?<=:sha256 ")[^"]*' <<< "$meta" )
