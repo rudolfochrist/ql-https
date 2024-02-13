@@ -95,8 +95,7 @@ starting storage block in STREAM, and the total file size."
 (defun content-hash (tarfile)
   "Return a hash string of TARFILE. The hash is computed by creating
 the digest of the files in TARFILE in order of their name."
-  (let ((temp "quicklisp-controller:tmp;tarhash.tar"))
-    (ensure-directories-exist temp)
+  (uiop:with-temporary-file (:pathname temp)
     (setf tarfile (gunzip tarfile temp))
     (unwind-protect
          (with-open-file (stream tarfile :element-type '(unsigned-byte 8))
