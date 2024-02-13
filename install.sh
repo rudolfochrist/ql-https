@@ -3,6 +3,13 @@
 set -euo pipefail
 
 LISP=${LISP=sbcl}
+QL_TOPDIR="${QL_TOPDIR-$HOME/quicklisp}"
+
+if test -d "$QL_TOPDIR"; then
+    echo "Cannot install Quicklisp because it seems it is already installed!"
+    echo "Please check $QL_TOPDIR"
+    exit 1
+fi
 
 echo "Downloading quicklisp metadata..."
 mkdir -p ~/quicklisp
