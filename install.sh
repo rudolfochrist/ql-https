@@ -26,7 +26,7 @@ sha256=$( perl -nle 'print $& if m{(?<=:sha256 ")[^"]*}g' <<< "$meta" )
 echo "Downloading quicklisp client..."
 curl -s "$url" -o "$QL_TOPDIR"/quicklisp.tar
 
-if [ "$sha256" != "$(sha256sum "$QL_TOPDIR"/quicklisp.tar  | cut -d' ' -f 1)" ]
+if [ "$sha256" != "$(openssl dgst -sha256 "$QL_TOPDIR"/quicklisp.tar  | cut -d' ' -f 2)" ]
 then
     echo "sha mismatch" >&2
     exit 1
