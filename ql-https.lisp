@@ -17,11 +17,20 @@
   "Fetch URL and safe it to FILE."
   (declare (ignorable args))
   (if (uiop:string-prefix-p "https://" url)
-      (let ((output (uiop:run-program (format nil "curl -fsSL ~A -o ~A" url file)
-                                      :output '(:string :stripped t)
-                                      :error-output :output))
-            (file (and file (probe-file file)))
-            (release (url-to-release url)))
+      ;; Convert the file path to a string with any leading "~" replaced by the
+      ;; HOME directory, and then download.
+      (let* ((file-namestring (namestring file))
+             (file-namestring-full (if (uiop:string-prefix-p "~" file-namestring)
+                                       (concatenate 'string
+                                                    (namestring (user-homedir-pathname))
+                                                    (subseq file-namestring 1))
+                                       file-namestring))
+             (output (uiop:run-program (list "curl" "-fsSL" url "-o" file-namestring-full)
+                                       :force-shell nil
+                                       :output '(:string :stripped t)
+                                       :error-output :output))
+             (file (and file (probe-file file)))
+             (release (url-to-release url)))
         (when release
           (verify-download file release))
         (values output file))
