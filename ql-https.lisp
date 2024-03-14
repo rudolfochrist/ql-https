@@ -6,9 +6,16 @@
   (:export
    #:fetcher
    #:*quietly-use-https*
-   #:register-fetch-scheme-functions))
+   #:register-fetch-scheme-functions
+   #:no-https-error))
 
 (in-package #:ql-https)
+
+(define-condition no-https-error (error)
+  ((url :initarg :url
+        :reader no-https-url))
+  (:report (lambda (c stream)
+             (format stream "We don't use HTTP here!~&URL: ~A" (no-https-url c)))))
 
 (defvar *quietly-use-https* nil
   "If non-nil quietly use HTTPS.")
@@ -35,11 +42,11 @@
           (verify-download file release))
         (values output file))
       (restart-case
-          (handler-bind ((error (lambda (c)
-                                  (declare (ignore c))
-                                  (when *quietly-use-https*
-                                    (invoke-restart 'use-https)))))
-            (error "We don't use HTTP here!~&URL: ~A" url))
+          (handler-bind ((no-https-error (lambda (c)
+                                           (declare (ignore c))
+                                           (when *quietly-use-https*
+                                             (invoke-restart 'use-https)))))
+            (error 'no-https-error :url url))
         (use-https ()
           :report "Retry with HTTPS."
           (apply #'fetcher
