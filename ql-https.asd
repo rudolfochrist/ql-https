@@ -18,6 +18,23 @@
      (uiop:subpathname *load-pathname* "README.md"))
   :perform (load-op :after (o c)
                     (uiop:symbol-call :ql-https :register-fetch-scheme-functions)
-                    (pushnew :ql-https *features*)))
+                    (pushnew :ql-https *features*))
+  :in-order-to ((test-op (test-op "ql-https/test"))))
+
+
+(defsystem "ql-https/test"
+  :description "Tests for ql-https"
+  :depends-on ((:require "uiop")
+               "fiasco"
+               "ql-https")
+  :pathname "t/"
+  :components ((:file "tests"))
+  :perform (test-op (op c)
+                    (unless (uiop:symbol-call :fiasco :run-package-tests :package :ql-https/test)
+                      #+(not (or :swank :slynk))
+                      (error "Tests failed."))))
+
+
+
 
 
