@@ -21,6 +21,7 @@ meta=$( curl -s https://beta.quicklisp.org/client/quicklisp.sexp | \
             awk '/:client-tar/,/)/' | tr '\n' ' ' | tr -s ' ' )
 
 url=$( perl -nle 'print $& if m{(?<=:url ")[^"]*}g' <<< "$meta" )
+[[ "$url" =~ ^http:// ]] && url="https${url#http}"
 sha256=$( perl -nle 'print $& if m{(?<=:sha256 ")[^"]*}g' <<< "$meta" )
 
 echo "Downloading quicklisp client..."
