@@ -98,6 +98,16 @@ dist."
     (unless (= (ql-dist:archive-size release) (file-size file))
       (error "file size mismatch for ~A" name))))
 
+(defmethod ql-dist:check-local-archive-file :after ((release ql-dist:release))
+    "Checks that the md5 and size of FILE are as expected from the quicklisp
+dist."
+  (let ((name (ql-dist:name release))
+        (file (ql-dist:local-archive-file release)))
+    (unless (string-equal (ql-dist:archive-md5 release) (md5 file))
+      (error "md5 mismatch for ~A" name))
+    (unless (string-equal (ql-dist:archive-content-sha1 release) (content-hash file))
+      (error "sha1 mismatch for ~A" name))))
+
 (defun register-fetch-scheme-functions ()
   (setf ql-http:*fetch-scheme-functions*
         (list (cons "http" 'fetcher)
