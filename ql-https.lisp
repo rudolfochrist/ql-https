@@ -98,15 +98,44 @@ dist."
     (unless (= (ql-dist:archive-size release) (file-size file))
       (error "file size mismatch for ~A" name))))
 
+(defun content-hash-ultralisp (tarfile)
+  (let* ((octets (babel-streams:with-output-to-sequence (buffer)
+                   (uiop:run-program
+                    (apply #'concatenate
+                           'string (list "tar -xOf" (namestring tarfile)))
+                    :output buffer)))
+
+         ;; (openssl-sha1
+         ;;   (uiop:launch-program "openssl dgst -sha1"
+         ;;                        :input (copy-seq octets)
+         ;;                        :element-type '(unsigned-byte 8)
+         ;;                        :output :stream))
+         )
+    ;; (print
+    ;;  (extract-openssl-digest
+    ;;   (read-binary-line
+    ;;    (uiop:process-info-output openssl-sha1))))
+
+    (ironclad:byte-array-to-hex-string
+     (ironclad:digest-sequence :sha1 (copy-seq octets)))))
+
 (defmethod ql-dist:check-local-archive-file :after ((release ql-dist:release))
-    "Checks that the md5 and size of FILE are as expected from the quicklisp
+  "Checks that the md5 and size of FILE are as expected from the quicklisp
 dist."
   (let ((name (ql-dist:name release))
         (file (ql-dist:local-archive-file release)))
+
     (unless (string-equal (ql-dist:archive-md5 release) (md5 file))
       (error "md5 mismatch for ~A" name))
-    (unless (string-equal (ql-dist:archive-content-sha1 release) (content-hash file))
-      (error "sha1 mismatch for ~A" name))))
+
+    (let* ((archive-sha1 (ql-dist:archive-content-sha1 release))
+           (ql-dist-name (slot-value (slot-value release 'ql-dist:dist) 'ql-dist:name))
+           (expected (case ql-dist-name
+                       ("quicklisp" (content-hash file))
+                       ("ultralisp" (content-hash-ultralisp file))
+                       (t nil))))
+      (when (and expected (not (string-equal archive-sha1 expected)))
+        (error "sha1 mismatch for ~A" name)))))
 
 (defun register-fetch-scheme-functions ()
   (setf ql-http:*fetch-scheme-functions*
