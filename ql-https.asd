@@ -47,7 +47,5 @@
 
 
 
-(loop for f in (list :ql-https/quicklisp-check-sha1 :ql-https/ultralisp-check-sha1)
-      do (setf *features* (delete f *features*)))
 
 
