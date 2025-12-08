@@ -98,6 +98,7 @@ dist."
     (unless (= (ql-dist:archive-size release) (file-size file))
       (error "file size mismatch for ~A" name))))
 
+#+ql-https/ultralisp-check-sha1
 (defun content-hash-ultralisp (tarfile)
   (let* ((octets (babel-streams:with-output-to-sequence (buffer)
                    (uiop:run-program
@@ -131,7 +132,9 @@ dist."
     (let* ((archive-sha1 (ql-dist:archive-content-sha1 release))
            (ql-dist-name (slot-value (slot-value release 'ql-dist:dist) 'ql-dist:name))
            (expected (case ql-dist-name
+                       #+ql-https/quicklisp-check-sha1
                        ("quicklisp" (content-hash file))
+                       #+ql-https/ultralisp-check-sha1
                        ("ultralisp" (content-hash-ultralisp file))
                        (t nil))))
       (when (and expected (not (string-equal archive-sha1 expected)))
