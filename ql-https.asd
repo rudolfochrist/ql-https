@@ -29,6 +29,8 @@
      (uiop:subpathname *load-pathname* "README.md"))
   :perform (load-op :after (o c)
                     (uiop:symbol-call :ql-https :register-fetch-scheme-functions)
+                    (loop for f in (list :ql-https/quicklisp-check-sha1 :ql-https/ultralisp-check-sha1)
+                          do (setf *features* (delete f *features*)))
                     (pushnew :ql-https *features*))
   :in-order-to ((test-op (test-op "ql-https/test"))))
 
