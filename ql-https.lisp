@@ -102,8 +102,7 @@ dist."
 (defun content-hash-ultralisp (tarfile)
   (let* ((octets (babel-streams:with-output-to-sequence (buffer)
                    (uiop:run-program
-                    (apply #'concatenate
-                           'string (list "tar -xOf" (namestring tarfile)))
+                    (list "tar -xOf" (namestring tarfile))
                     :output buffer)))
 
          ;; (openssl-sha1
@@ -130,7 +129,7 @@ dist."
       (error "md5 mismatch for ~A" name))
 
     (let* ((archive-sha1 (ql-dist:archive-content-sha1 release))
-           (ql-dist-name (slot-value (slot-value release 'ql-dist:dist) 'ql-dist:name))
+           (ql-dist-name (ql-dist:name (ql-dist:release 'ql-dist:dist)))
            (expected (case ql-dist-name
                        #+ql-https/quicklisp-check-sha1
                        ("quicklisp" (content-hash file))
