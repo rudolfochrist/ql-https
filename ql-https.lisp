@@ -129,9 +129,8 @@ dist."
       (error "md5 mismatch for ~A" name))
 
     (let* ((archive-sha1 (ql-dist:archive-content-sha1 release))
-           (ql-dist-name (ql-dist:name (ql-dist:release 'ql-dist:dist)))
+           (ql-dist-name (ql-dist:name (ql-dist:dist release)))
            (expected (case ql-dist-name
-                       #+ql-https/quicklisp-check-sha1
                        ("quicklisp" (content-hash file))
                        #+ql-https/ultralisp-check-sha1
                        ("ultralisp" (content-hash-ultralisp file))

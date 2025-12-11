@@ -3,8 +3,6 @@
 (dolist (dist (ql-dist:all-dists))
   (let ((dist-name (slot-value dist 'ql-dist::name)))
     (cond
-      ((string= dist-name "quicklisp")
-       (pushnew :ql-https/quicklisp-check-sha1 *features*))
       ((string= dist-name "ultralisp")
        (pushnew :ql-https/ultralisp-check-sha1 *features*)))))
 
@@ -29,7 +27,7 @@
      (uiop:subpathname *load-pathname* "README.md"))
   :perform (load-op :after (o c)
                     (uiop:symbol-call :ql-https :register-fetch-scheme-functions)
-                    (loop for f in (list :ql-https/quicklisp-check-sha1 :ql-https/ultralisp-check-sha1)
+                    (loop for f in (list :ql-https/ultralisp-check-sha1)
                           do (setf *features* (delete f *features*)))
                     (pushnew :ql-https *features*))
   :in-order-to ((test-op (test-op "ql-https/test"))))
