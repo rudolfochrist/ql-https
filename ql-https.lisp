@@ -59,11 +59,15 @@
           (apply #'fetcher url file args)))))
 
 (defun url-to-release (url)
-  "extracts name of release from URL"
-  (when (search "/archive/" url)
-    (let* ((start (+ (search "/archive/" url) (length "/archive/")))
-           (end (position #\/ url :start start)))
-      (subseq url start end))))
+  "obtains name of release from URL"
+  (let* ((http-url (if (string-equal "https" (subseq url 0 5))
+                       (uiop:strcat "http" (subseq url 5))
+                       url))
+         (all-releases (ql-dist:provided-releases t))
+         (release (find http-url all-releases
+                        :test #'string=
+                        :key #'ql-dist:archive-url)))
+    (ql-dist:project-name release)))
 
 #+sbcl
 (defun md5 (file)
