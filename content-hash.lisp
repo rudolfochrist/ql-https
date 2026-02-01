@@ -127,7 +127,7 @@ starting storage block in STREAM, and the total file size."
           until (= byte (char-code #\Newline))
           do (write-char (code-char byte) string))))
 
-(defun content-hash (tarfile)
+(defun content-hash (tarfile &optional content-info-processor)
   "Return a hash string of TARFILE. The hash is computed by creating
 the digest of the files in TARFILE in order of their name."
   (uiop:with-temporary-file (:pathname temp)
@@ -150,7 +150,10 @@ the digest of the files in TARFILE in order of their name."
                         (read-sequence buffer stream)
                         (write-sequence buffer digest-stream :end partial))))
                (let ((contents (content-info stream)))
-                 (setf contents (sort contents #'string< :key #'first))
+                 (setf contents
+                       (if content-info-processor
+                           (funcall content-info-processor contents)
+                           contents))
                  (dolist (info contents)
                    (destructuring-bind (position size)
                        (rest info)

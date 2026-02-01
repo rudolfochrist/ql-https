@@ -95,12 +95,15 @@
   "Checks that the md5 and size of FILE are as expected from the quicklisp
 dist."
   (let ((release (ql-dist:find-release name)))
+    (unless (= (ql-dist:archive-size release) (file-size file))
+      (error "file size mismatch for ~A" name))
     (unless (string-equal (ql-dist:archive-md5 release) (md5 file))
       (error "md5 mismatch for ~A" name))
-    (unless (string-equal (ql-dist:archive-content-sha1 release) (content-hash file))
-      (error "sha1 mismatch for ~A" name))
-    (unless (= (ql-dist:archive-size release) (file-size file))
-      (error "file size mismatch for ~A" name))))
+    (unless (member (ql-dist:archive-content-sha1 release)
+                    (list (content-hash file (lambda (c) (sort c #'string< :key #'first)))
+                          (content-hash file #'reverse))
+                    :test #'string-equal)
+      (error "sha1 mismatch for ~A" name))))
 
 (defun register-fetch-scheme-functions ()
   (setf ql-http:*fetch-scheme-functions*
