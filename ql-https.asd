@@ -1,5 +1,11 @@
 ;;;; ql-https.asd
 
+(dolist (dist (ql-dist:all-dists))
+  (let ((dist-name (slot-value dist 'ql-dist::name)))
+    (cond
+      ((string= dist-name "ultralisp")
+       (pushnew :ql-https/ultralisp-check-sha1 *features*)))))
+
 (defsystem "ql-https"
   :author "Sebastian Christ <rudolfo.christ@pm.me>"
   :maintainer "Sebastian Christ <rudolfo.christ@pm.me>"
@@ -9,7 +15,10 @@
   :bug-tracker "https://github.com/rudolfochrist/ql-https/issues"
   :source-control (:git "https://github.com/rudolfochrist/ql-https.git")
   :version (:read-file-line "version")
-  :depends-on ((:require "uiop") (:feature :sbcl :sb-md5))
+  :depends-on ((:require "uiop")
+               #+ql-https/ultralisp-check-sha1 (:require "ironclad")
+               #+ql-https/ultralisp-check-sha1 (:require "babel-streams")
+               (:feature :sbcl :sb-md5))
   :components ((:file "ql-https")
                (:file "content-hash"))
   :description "Enable HTTPS in Quicklisp"
@@ -18,6 +27,8 @@
      (uiop:subpathname *load-pathname* "README.md"))
   :perform (load-op :after (o c)
                     (uiop:symbol-call :ql-https :register-fetch-scheme-functions)
+                    (loop for f in (list :ql-https/ultralisp-check-sha1)
+                          do (setf *features* (delete f *features*)))
                     (pushnew :ql-https *features*))
   :in-order-to ((test-op (test-op "ql-https/test"))))
 
