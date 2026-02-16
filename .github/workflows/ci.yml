@@ -31,7 +31,7 @@ jobs:
       - name: Install Quicklisp and ql-https
         run: bash install.sh
 
-      - name: Run a multi-line script
+      - name: Run tests
         run: |
           sbcl <<EOF
           (require 'asdf)
