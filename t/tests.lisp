@@ -14,7 +14,20 @@
 (deftest test-downloading-system ()
   (let ((ql-https:*quietly-use-https* nil))
     (signals ql-https:no-https-error
-      (ql:quickload "str" :silent t))))
+             (ql:quickload "str" :silent t))))
+
+(deftest test-quicklisp-download ()
+  (let ((ql-https:*quietly-use-https* t))
+    (ql:quickload "str" :silent t))
+  (is (probe-file (merge-pathnames "quicklisp/dists/quicklisp/installed/systems/str.txt"
+                                   (user-homedir-pathname)))))
+
+(deftest test-ultralisp-download ()
+  ;; install ultralisp
+  (ql-dist:install-dist "https://dist.ultralisp.org/")
+  (let ((ql-https:*quietly-use-https* t))
+    (ql:quickload "hyperdoc" :silent t))
+  (is (probe-file (merge-pathnames "quicklisp/dists/ultralisp/installed/systems/hyperdoc.txt"))))
 
 
 
