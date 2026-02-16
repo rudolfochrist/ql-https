@@ -67,7 +67,8 @@
          (release (find http-url all-releases
                         :test #'string=
                         :key #'ql-dist:archive-url)))
-    (ql-dist:project-name release)))
+    (when release
+      (ql-dist:project-name release))))
 
 #+sbcl
 (defun md5 (file)
