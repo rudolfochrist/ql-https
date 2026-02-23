@@ -38,8 +38,6 @@
                                        :error-output :output))
              (file (and file (probe-file file)))
              (release (url-to-release url)))
-        (when release
-          (verify-download file release))
         (values output file))
       (restart-case
           (handler-bind ((no-https-error (lambda (c)
@@ -92,14 +90,15 @@
   (with-open-file (f file)
     (file-length f)))
 
-(defun verify-download (file name)
+(defmethod ql-dist:check-local-archive-file :after ((release ql-dist:release))
   "Checks that the md5 and size of FILE are as expected from the quicklisp
 dist."
-  (let ((release (ql-dist:find-release name)))
-    (unless (= (ql-dist:archive-size release) (file-size file))
-      (error "file size mismatch for ~A" name))
+  (let ((name (ql-dist:name release))
+        (file (ql-dist:local-archive-file release)))
+
     (unless (string-equal (ql-dist:archive-md5 release) (md5 file))
       (error "md5 mismatch for ~A" name))
+
     (unless (member (ql-dist:archive-content-sha1 release)
                     (list (content-hash file (lambda (c) (sort c #'string< :key #'first)))
                           (content-hash file #'reverse))
