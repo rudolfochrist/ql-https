@@ -61,7 +61,7 @@ at the terminating block of the end of input, BUFFER otherwise."
 (defun block-asciiz-string (block start length)
   (let* ((end (+ start length))
          (eos (or (position 0 block :start start :end end)
-                            end)))
+                  end)))
     (ascii-subseq block start eos)))
 
 (defun payload-size (header)
@@ -161,3 +161,41 @@ the digest of the files in TARFILE in order of their name."
                (extract-openssl-digest (read-binary-line (uiop:process-info-output openssl))))))
       (when (probe-file temp)
         (ignore-errors (delete-file temp))))))
+
+(defun content-hash-ultralisp (tarfile)
+  "Return a hash string of TARFILE. The hash is done with openssl, and done in
+the order in which Ultralisp expects the SHA to be computed (which is subtly
+different than standard quicklisp).
+
+Chiefly, Ultralisps processing is as follows:
+`tar -xOf <file>` into a sequence (via babel-streams) & process said
+sequence with ironclad.
+"
+  (let* ((tar
+           (uiop:launch-program
+            (list "tar" "-xOf" (namestring tarfile))
+            :output :stream
+            :element-type '(unsigned-byte 8)))
+         (openssl
+           (uiop:launch-program
+            (list "openssl" "dgst" "-sha1")
+            :input :stream
+            :output :stream
+            :element-type '(unsigned-byte 8)))
+         (tar-out (uiop:process-info-output tar))
+         (openssl-in (uiop:process-info-input openssl))
+         (buffer (make-array 8192 :element-type '(unsigned-byte 8))))
+    (unwind-protect
+         (loop
+           for count = (read-sequence buffer tar-out)
+           while (> count 0)
+           do (write-sequence buffer openssl-in :end count))
+      (close openssl-in))
+    (unless (zerop (uiop:wait-process tar))
+      (error "tar failed while extracting contents"))
+    (unless (zerop (uiop:wait-process openssl))
+      (error "openssl failed to calculate sha1"))
+
+    (extract-openssl-digest
+     (read-binary-line
+      (uiop:process-info-output openssl)))))
