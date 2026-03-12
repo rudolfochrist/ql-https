@@ -124,7 +124,9 @@ starting storage block in STREAM, and the total file size."
   "Read a line from a binary stream and return it as an ascii string."
   (with-output-to-string (string)
     (loop for byte = (read-byte stream)
-          until (= byte (char-code #\Newline))
+          with line-end-chars = (list (char-code #\Newline)
+                                      (char-code #\Return))
+          until (member byte line-end-chars :test #'=)
           do (write-char (code-char byte) string))))
 
 (defun content-hash (tarfile &optional content-info-processor)
