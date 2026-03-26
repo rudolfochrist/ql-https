@@ -9,11 +9,24 @@
 
 (def-suite* :ql-https)
 
+#+(and sbcl sb-thread)
 (defmacro wait ((&key (timeout 20)) &body body)
   (let ((gthread (gensym "thread")))
     `(let ((,gthread (sb-thread:make-thread (lambda ()
                                               (progn ,@body)))))
        (sb-thread:join-thread ,gthread :timeout ,timeout))))
+
+#+ecl
+(defmacro wait ((&key (timeout 20)) &body body)
+  (decalre (ignore timeout))
+  (let ((gthread (gensym "thread")))
+    `(let ((,gthread (mp:process-run-function 'wait-thread (lambda () (progn ,@body)))))
+       (mp:process-join ,gthread))))
+
+#-(or sbcl ecl)
+(defmacro wait ((&key (timeout 20)) &body body)
+  (declare (ignore timeout))
+  `(progn ,@body))
 
 (test test-ql-https-is-initialized-correctly
   (let ((http-function (cdr (assoc "http" ql-http:*fetch-scheme-functions* :test #'string=)))
