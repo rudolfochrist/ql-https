@@ -26,7 +26,7 @@ jobs:
         lisp: [sbcl, ecl]
         exclude:
           - os: windows-latest
-            lisp: [ecl]
+            lisp: ecl
     defaults:
       run:
         shell: bash
@@ -36,21 +36,13 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v4
 
-      - name: Install SBCL (Linux)
-        if: runner.os == 'Linux' && matrix.lisp == 'sbcl'
-        run: sudo apt-get install -y sbcl
+      - name: Install ${{ matrix.lisp }} (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get install -y ${{ matrix.lisp }}
 
-      - name: Install ECL (Linux)
-        if: runner.os == 'Linux' && matrix.lisp == 'ecl'
-        run: sudo apt-get install -y ecl
-
-      - name: Install SBCL (macOS)
-        if: runner.os == 'macOS' && matrix.lisp == 'sbcl'
-        run: brew install sbcl
-
-      - name: Install ECL (macOS)
-        if: runner.os == 'macOS' && matrix.lisp == 'ecl'
-        run: brew install ecl
+      - name: Install ${{ matrix.lisp }} (macOS)
+        if: runner.os == 'macOS'
+        run: brew install ${{ matrix.lisp }}
 
       - name: Install SBCL (Windows)
         if: runner.os == 'Windows'

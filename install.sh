@@ -50,6 +50,7 @@ if test "$SKIP_USERINIT" = no; then
 (quicklisp:setup)
 (ql-util:without-prompting
   (ql:add-to-init-file))
+(uiop:quit)
 EOF
 
     cat > "$QL_TOPDIR"/setup.lisp <<EOF
