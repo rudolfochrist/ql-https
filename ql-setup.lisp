@@ -24,9 +24,6 @@
 ;; Whenever the client is updated the setup.lisp is replaced
 ;; and contains the call to setup.
 
-(in-package #:common-lisp-user)
-(export '*quicklisp-home*)
-
 (defpackage #:ql-setup
   (:use #:cl)
   (:export #:*quicklisp-home*
@@ -41,8 +38,8 @@
 (defvar *quicklisp-home*
   (make-pathname :name nil :type nil
                  :defaults (let ((qlhome "~/quicklisp/"))
-                             (when (boundp 'cl-user:*quicklisp-home*)
-                               (setf qlhome cl-user:*quicklisp-home*))
+                             (when (boundp 'cl-user::*quicklisp-home*)
+                               (setf qlhome cl-user::*quicklisp-home*))
                              (if (probe-file qlhome)
                                  qlhome
                                  (error "Quicklisp not installed to
