@@ -40,11 +40,12 @@ now run the installer script:
 4.  Disconnect internet. (Prevent that anything leaks over HTTP during the installation)
 5.  Start a fresh REPL and (require 'asdf)
 6.  Load `~/common-lisp/ql-https/ql-setup.lisp`
-7.  Eval `(asdf:load-system "ql-https")`
-8.  Inspect `ql-http:*fetch-scheme-functions*` and verify everything was registered properly. Both `http` and
+7.  Run `(ql-setup:setup-asdf)`
+8.  Eval `(asdf:load-system "ql-https")`
+9.  Inspect `ql-http:*fetch-scheme-functions*` and verify everything was registered properly. Both `http` and
     `https` have `ql-https:fetcher` registered.
-9.  Connect internet.
-10. Eval `(quicklisp:setup)` - use the USE-HTTPS restart if you hit the network.
+10. Connect internet.
+11. Eval `(quicklisp:setup)` - use the USE-HTTPS restart if you hit the network.
 
 Removing the *Missing client-info.sexp, using mock info* warning.
 

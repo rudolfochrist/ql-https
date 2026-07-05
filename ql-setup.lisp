@@ -28,7 +28,8 @@
   (:use #:cl)
   (:export #:*quicklisp-home*
            #:qmerge
-           #:qenough))
+           #:qenough
+           #:setup-asdf))
 
 (in-package #:ql-setup)
 
@@ -36,14 +37,18 @@
   (error "This file must be LOADed to set up quicklisp."))
 
 (defvar *quicklisp-home*
-  (make-pathname :name nil :type nil
-                 :defaults (let ((qlhome "~/quicklisp/"))
-                             (if (probe-file qlhome)
-                                 qlhome
-                                 (error "Quicklisp not installed to
-                                 default location. Please set
-                                 *quicklisp-home* manually and
-                                 retry")))))
+  "~/quicklisp/")
+
+(defun verify-quicklisp-home ()
+  (assert (probe-file *quicklisp-home*)
+          (*quicklisp-home*)
+          "*quicklisp-home* points to a directory which doesn't exist: ~A
+
+Please set it to the location where Quicklisp is installed.~%"
+          *quicklisp-home*)
+  (make-pathname :name nil
+                 :type nil
+                 :defaults *quicklisp-home*))
 
 (defun qmerge (pathname)
   "Return PATHNAME merged with the base Quicklisp directory."
@@ -151,15 +156,20 @@ compiling asdf.lisp to a FASL and then loading it."
 ;;; ASDF. Thanks to Nikodemus Siivola for pointing out this issue.
 ;;;
 
-(let ((asdf-init (probe-file (qmerge "asdf-config/init.lisp"))))
-  (when asdf-init
-    (with-simple-restart (skip "Skip loading ~S" asdf-init)
-      (load asdf-init :verbose nil :print nil))))
+(defun setup-asdf ()
+  (let ((asdf-init (probe-file (qmerge "asdf-config/init.lisp"))))
+    (when asdf-init
+      (with-simple-restart (skip "Skip loading ~S" asdf-init)
+        (load asdf-init :verbose nil :print nil))))
 
-(push (qmerge "quicklisp/") asdf:*central-registry*)
+  (push (qmerge "quicklisp/") asdf:*central-registry*)
 
-(let ((*compile-print* nil)
-      (*compile-verbose* nil)
-      (*load-verbose* nil)
-      (*load-print* nil))
-  (asdf:oos 'asdf:load-op "quicklisp" :verbose nil))
+  (let ((*compile-print* nil)
+        (*compile-verbose* nil)
+        (*load-verbose* nil)
+        (*load-print* nil))
+    (asdf:oos 'asdf:load-op "quicklisp" :verbose nil)))
+
+(format t "Please ensure ql-setup:*quicklisp-home* is set (currently ~S),
+and run (ql-setup:setup-asdf) before proceeding with the Quicklisp installation.~%"
+        *quicklisp-home*)
