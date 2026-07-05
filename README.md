@@ -63,6 +63,7 @@ Watch ASCIInema:
 (let ((quicklisp-init #p"~/common-lisp/ql-https/ql-setup.lisp"))
   (when (probe-file quicklisp-init)
     (load quicklisp-init)
+	(ql-setup:setup-asdf)
     (asdf:load-system "ql-https")
     (uiop:symbol-call :quicklisp :setup)))
 
