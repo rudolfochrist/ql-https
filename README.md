@@ -40,8 +40,6 @@ now run the installer script:
 4. Start a fresh REPL and (require 'asdf)
 5. Load `~/common-lisp/ql-https/ql-setup.lisp`
 6. Eval `(uiop:symbol-call :ql-setup :setup)`
-7. Eval `(asdf:load-system "ql-https")`
-8. Eval `(quicklisp:setup)` - use the USE-HTTPS restart if you hit the network.
 
 Removing the *Missing client-info.sexp, using mock info* warning.
 
@@ -59,10 +57,8 @@ Watch ASCIInema:
 (let ((quicklisp-init #p"~/common-lisp/ql-https/ql-setup.lisp"))
   (when (probe-file quicklisp-init)
     (load quicklisp-init)
-    (uiop:symbol-call :ql-setup :setup)
 	;; Alternatively: (uiop:symbol-call :ql-setup :setup "/path/to/quicklisp/")
-	(asdf:load-system "ql-https")
-	(quicklisp:setup)))
+    (uiop:symbol-call :ql-setup :setup)))
 
 ;; optional
 #+ql-https

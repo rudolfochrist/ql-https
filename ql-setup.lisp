@@ -39,17 +39,6 @@
   (merge-pathnames "quicklisp/"
                    (user-homedir-pathname)))
 
-(defun verify-quicklisp-home ()
-  (assert (probe-file *quicklisp-home*)
-          (*quicklisp-home*)
-          "*quicklisp-home* points to a directory which doesn't exist: ~A
-
-Please set it to the location where Quicklisp is installed.~%"
-          *quicklisp-home*)
-  (make-pathname :name nil
-                 :type nil
-                 :defaults *quicklisp-home*))
-
 (defun qmerge (pathname)
   "Return PATHNAME merged with the base Quicklisp directory."
   (merge-pathnames pathname *quicklisp-home*))
@@ -176,4 +165,7 @@ If QUICKLISP-HOME is given, binds `*quicklisp-home*' to it."
         (*compile-verbose* nil)
         (*load-verbose* nil)
         (*load-print* nil))
-    (asdf:oos 'asdf:load-op "quicklisp" :verbose nil)))
+    (asdf:oos 'asdf:load-op "quicklisp" :verbose nil))
+
+  (asdf:load-system "ql-https")
+  (uiop:symbol-call :quicklisp :setup))
