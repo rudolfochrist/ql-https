@@ -44,18 +44,22 @@ jobs:
         if: runner.os == 'Windows'
         run: choco install sbcl
 
-      - name: Install Quicklisp and ql-https
-        run: ./install.sh
-
-      - name: Run tests
+      - name: Install ql-https and run tests 
         env:
           CI: 1
         run: |
-          sbcl <<EOF
-          (require 'asdf)
-          (push (uiop:getcwd) asdf:*central-registry*)
-          (ql:quickload "ql-https/test")
-          (asdf:test-system "ql-https")
-          (uiop:quit)
-          EOF
+          mkdir quicklisp
+          echo "Downloading quicklisp client..."
+          curl -s 'http://beta.quicklisp.org/client/2021-02-13/quicklisp.tar' -o quicklisp/quicklisp.tar
+          tar xf quicklisp/quicklisp.tar -C quicklisp
+          sbcl --non-interactive \
+              --eval "(require 'asdf)" \
+              --eval '(push (uiop:getcwd) asdf:*central-registry*)' \
+              --eval '(push (merge-pathnames "quicklisp/quicklisp/" (uiop:getcwd)) asdf:*central-registry*)' \
+              --load ql-setup.lisp \
+              --load install.lisp \
+              --eval '(setf ql-https:*quietly-use-https* t)' \
+              --eval '(ql:quickload "ql-https/test")' \
+              --eval '(asdf:test-system "ql-https")'
+
 

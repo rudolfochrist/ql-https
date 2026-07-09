@@ -3,6 +3,7 @@
 set -euo pipefail
 
 LISP=${LISP=sbcl}
+CLFLAGS=${CLFLAGS=--non-interactive --no-userinit}
 
 # For testers
 QL_TOPDIR="${QL_TOPDIR-$HOME/quicklisp}"
@@ -41,24 +42,15 @@ git clone https://github.com/rudolfochrist/ql-https "$CLDIR"/ql-https
 
 if test "$SKIP_USERINIT" = no; then
     echo "Running setup code..."
-    $LISP <<EOF
-(require 'asdf)
-(load "~/common-lisp/ql-https/ql-setup.lisp")
-(asdf:load-system "ql-https")
-(assert (equalp ql-http:*fetch-scheme-functions* '(("http" . ql-https:fetcher) ("https" . ql-https:fetcher))))
-(setf ql-https:*quietly-use-https* t)
-(quicklisp:setup)
-(ql-util:without-prompting
-  (ql:add-to-init-file))
-EOF
-
+    $LISP $CLFLAGS \
+          --load "$CLDIR/ql-https/ql-setup.lisp" \
+          --load "$CLDIR/ql-https/install.lisp"
     cat > "$QL_TOPDIR"/setup.lisp <<EOF
 (require 'asdf)
 (let ((quicklisp-init #p"~/common-lisp/ql-https/ql-setup.lisp"))
   (when (probe-file quicklisp-init)
     (load quicklisp-init)
-    (asdf:load-system "ql-https")
-    (uiop:symbol-call :quicklisp :setup)))
+    (uiop:symbol-call :ql-setup :setup)))
 
 ;; optional
 #+ql-https
