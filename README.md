@@ -32,19 +32,14 @@ now run the installer script:
 
 ## MANUAL INSTALLATION
 
-1.  `mkdir ~/quicklisp` and `cd ~/quicklisp`
-2.  Go to <https://beta.quicklisp.org/client/quicklisp.sexp> and lookup `:client-tar` URL, download it, verify
-    hash and untar.
-3.  Clone ql-https from <https://github.com/rudolfochrist/ql-https.git> to
-    to `~/common-lisp/ql-https`
-4.  Disconnect internet. (Prevent that anything leaks over HTTP during the installation)
-5.  Start a fresh REPL and (require 'asdf)
-6.  Load `~/common-lisp/ql-https/ql-setup.lisp`
-7.  Eval `(asdf:load-system "ql-https")`
-8.  Inspect `ql-http:*fetch-scheme-functions*` and verify everything was registered properly. Both `http` and
-    `https` have `ql-https:fetcher` registered.
-9.  Connect internet.
-10. Eval `(quicklisp:setup)` - use the USE-HTTPS restart if you hit the network.
+1. `mkdir ~/quicklisp` and `cd ~/quicklisp`
+2. Go to <https://beta.quicklisp.org/client/quicklisp.sexp> and lookup `:client-tar` URL, download it, verify
+   hash and untar.
+3. Clone ql-https from <https://github.com/rudolfochrist/ql-https.git> to
+   to `~/common-lisp/ql-https`
+4. Start a fresh REPL and (require 'asdf)
+5. Load `~/common-lisp/ql-https/ql-setup.lisp`
+6. Eval `(uiop:symbol-call :ql-setup :setup)`
 
 Removing the *Missing client-info.sexp, using mock info* warning.
 
@@ -62,8 +57,8 @@ Watch ASCIInema:
 (let ((quicklisp-init #p"~/common-lisp/ql-https/ql-setup.lisp"))
   (when (probe-file quicklisp-init)
     (load quicklisp-init)
-    (asdf:load-system "ql-https")
-    (uiop:symbol-call :quicklisp :setup)))
+	;; Alternatively: (uiop:symbol-call :ql-setup :setup "/path/to/quicklisp/")
+    (uiop:symbol-call :ql-setup :setup)))
 
 ;; optional
 #+ql-https

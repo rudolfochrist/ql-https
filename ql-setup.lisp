@@ -36,14 +36,8 @@
   (error "This file must be LOADed to set up quicklisp."))
 
 (defvar *quicklisp-home*
-  (make-pathname :name nil :type nil
-                 :defaults (let ((qlhome "~/quicklisp/"))
-                             (if (probe-file qlhome)
-                                 qlhome
-                                 (error "Quicklisp not installed to
-                                 default location. Please set
-                                 *quicklisp-home* manually and
-                                 retry")))))
+  (merge-pathnames "quicklisp/"
+                   (user-homedir-pathname)))
 
 (defun qmerge (pathname)
   "Return PATHNAME merged with the base Quicklisp directory."
@@ -141,8 +135,6 @@ compiling asdf.lisp to a FASL and then loading it."
             (try (load (compile-file source :verbose nil :output-file fasl))))
           (error "Could not load ASDF ~S or newer" *required-asdf-version*))))))
 
-(ensure-asdf-loaded)
-
 ;;;
 ;;; Quicklisp sometimes must upgrade ASDF. Ugrading ASDF will blow
 ;;; away existing ASDF methods, so e.g. FASL recompilation :around
@@ -151,15 +143,29 @@ compiling asdf.lisp to a FASL and then loading it."
 ;;; ASDF. Thanks to Nikodemus Siivola for pointing out this issue.
 ;;;
 
-(let ((asdf-init (probe-file (qmerge "asdf-config/init.lisp"))))
-  (when asdf-init
-    (with-simple-restart (skip "Skip loading ~S" asdf-init)
-      (load asdf-init :verbose nil :print nil))))
+(defun setup (&optional quicklisp-home)
+  "Perform necessary set-up for the Quicklisp installation.
 
-(push (qmerge "quicklisp/") asdf:*central-registry*)
+If QUICKLISP-HOME is given, binds `*quicklisp-home*' to it."
+  (declare (type (or Null Pathname) quicklisp-home))
 
-(let ((*compile-print* nil)
-      (*compile-verbose* nil)
-      (*load-verbose* nil)
-      (*load-print* nil))
-  (asdf:oos 'asdf:load-op "quicklisp" :verbose nil))
+  (when quicklisp-home
+    (setf *quicklisp-home* quicklisp-home))
+
+  (ensure-asdf-loaded)
+
+  (let ((asdf-init (probe-file (qmerge "asdf-config/init.lisp"))))
+    (when asdf-init
+      (with-simple-restart (skip "Skip loading ~S" asdf-init)
+        (load asdf-init :verbose nil :print nil))))
+
+  (push (qmerge "quicklisp/") asdf:*central-registry*)
+
+  (let ((*compile-print* nil)
+        (*compile-verbose* nil)
+        (*load-verbose* nil)
+        (*load-print* nil))
+    (asdf:oos 'asdf:load-op "quicklisp" :verbose nil))
+
+  (asdf:load-system "ql-https")
+  (uiop:symbol-call :quicklisp :setup))
