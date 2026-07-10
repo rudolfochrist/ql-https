@@ -43,6 +43,7 @@ git clone https://github.com/rudolfochrist/ql-https "$CLDIR"/ql-https
 if test "$SKIP_USERINIT" = no; then
     echo "Running setup code..."
     $LISP $CLFLAGS \
+          --eval "(require 'asdf)" \
           --load "$CLDIR/ql-https/ql-setup.lisp" \
           --load "$CLDIR/ql-https/install.lisp"
     cat > "$QL_TOPDIR"/setup.lisp <<EOF
