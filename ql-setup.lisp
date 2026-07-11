@@ -24,6 +24,8 @@
 ;; Whenever the client is updated the setup.lisp is replaced
 ;; and contains the call to setup.
 
+(require 'asdf)
+
 (defpackage #:ql-setup
   (:use #:cl)
   (:export #:*quicklisp-home*
