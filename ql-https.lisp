@@ -76,7 +76,14 @@
 (defun extract-openssl-digest (output)
   "Extracts digest from output of `openssl dgst'"
   (let ((space-pos (position #\Space output)))
-    (subseq output (1+ space-pos))))    ; exclude space itself
+    (if space-pos
+        ;; strip everything before the space (space itself included)
+        (subseq output (1+ space-pos))
+        ;; on some systems the output of openssl doens't contain the
+        ;; sha file prefix: SHA1(filename)= <hash>
+        ;; so we return the output as is
+        ;; see issue #31
+        output)))
 
 #-sbcl
 (defun md5 (file)
